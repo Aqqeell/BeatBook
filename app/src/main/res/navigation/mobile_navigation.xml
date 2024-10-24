@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_dashboard">
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.gov.sindhpolice.beatbook.ui.dashboard.DashboardFragment"
+        android:label="@string/dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_nav_dashboard_to_addFragment"
+            app:destination="@id/addFragment" />
+        <action
+            android:id="@+id/action_nav_dashboard_to_listAllFragment"
+            app:destination="@id/listAllFragment" />
+        <action
+            android:id="@+id/action_nav_dashboard_to_visitsFragment"
+            app:destination="@id/visitsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addFragment"
+        android:name="com.gov.sindhpolice.beatbook.ui.AddFragment"
+        android:label="@string/btn_addNew"
+        tools:layout="@layout/fragment_add" />
+    <fragment
+        android:id="@+id/listAllFragment"
+        android:name="com.gov.sindhpolice.beatbook.ui.ListFragment"
+        android:label="List All"
+        tools:layout="@layout/fragment_list_all" >
+        <action
+            android:id="@+id/action_listAllFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.gov.sindhpolice.beatbook.ui.DetailFragment"
+        android:label="DetailFragment"
+        tools:layout="@layout/fragment_detail" />
+    <fragment
+        android:id="@+id/visitsFragment"
+        android:name="com.gov.sindhpolice.beatbook.ui.VisitsFragment"
+        android:label="VisitsFragment"
+        tools:layout="@layout/fragment_visit"/>
+
+</navigation>

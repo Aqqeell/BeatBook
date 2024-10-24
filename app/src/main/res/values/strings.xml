@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">BeatBook</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Beat Book</string>
+    <string name="nav_header_subtitle">www.sindhpolice.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="dashboard">Dashboard</string>
+    <string name="cv_places">Places</string>
+    <string name="cv_persons">Persons</string>
+    <string name="cv_policeDuty">Police Duty</string>
+    <string name="cv_crime">Crimes</string>
+    <string name="cv_politics">Politics</string>
+    <string name="cv_business">Businesses</string>
+    <string name="cv_sacredPlaces">Sacred Places</string>
+    <string name="cv_listAll">List All</string>
+    <string name="cv_visitPlaces">Visit Places</string>
+
+    <string name="btn_addNew">Add New</string>
+
+    <string name="menu_logout">Logout</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>
