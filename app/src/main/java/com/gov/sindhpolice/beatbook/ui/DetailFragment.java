@@ -65,7 +65,7 @@ public class DetailFragment extends Fragment {
 
     private void fetchEntryDetails(int entryId) {
 //        progressBar.setVisibility(View.VISIBLE);
-        String url = "http://10.0.2.2:8000/api/v1/bookentries/" + entryId; // Replace with your API URL
+        String url = "http://192.168.200.201:8000/api/v1/bookentries/" + entryId; // Replace with your API URL
         String token = SharedPrefManager.getInstance(getActivity()).getToken();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(

@@ -7,10 +7,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -18,15 +16,12 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.gov.sindhpolice.beatbook.databinding.ActivityLoginBinding;
 import com.gov.sindhpolice.beatbook.utils.SharedPrefManager;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String email, String password) {
-        String url = "http://10.0.2.2:8000/api/v1/login"; // API URL
+        String url = "http://192.168.200.201:8000/api/v1/login"; // API URL
 
         // Check network availability
         if (!isNetworkAvailable()) {
@@ -83,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             requestBody.put("email", email);
             requestBody.put("password", password);
+            Log.d(TAG, "Request Body: " + requestBody.toString()); // Log the request body
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -126,6 +122,12 @@ public class LoginActivity extends AppCompatActivity {
                     // Log the error response
                     Log.e(TAG, "Login error: " + error.toString());
 
+                    // Check if networkResponse is available
+                    if (error.networkResponse != null) {
+                        Log.e(TAG, "Response code: " + error.networkResponse.statusCode);
+                        Log.e(TAG, "Response body: " + new String(error.networkResponse.data));
+                    }
+
                     String errorMessage;
                     if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                         errorMessage = "Network timeout. Please check your connection.";
@@ -154,6 +156,5 @@ public class LoginActivity extends AppCompatActivity {
         // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
 
 }

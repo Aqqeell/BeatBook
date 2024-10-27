@@ -66,7 +66,7 @@ public class ListFragment extends Fragment {
 
     private void fetchEntries() {
         progressBar.setVisibility(View.VISIBLE);
-        String url = "http://10.0.2.2:8000/api/v1/bookentries"; // Replace with your API URL
+        String url = "http://192.168.200.201:8000/api/v1/bookentries"; // Replace with your API URL
         String token = SharedPrefManager.getInstance(getActivity()).getToken();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -125,7 +125,7 @@ public class ListFragment extends Fragment {
 
     public void onEntryClick(int entryId) {
         // Make your API call using the entryId
-        String url = "http://10.0.2.2:8000/api/v1/bookentries/" + entryId; // Replace with your API URL
+        String url = "http://192.168.200.201:8000/api/v1/bookentries/" + entryId; // Replace with your API URL
 
         Bundle bundle = new Bundle();
         bundle.putInt("entryId", entryId); // Pass the selected entry ID

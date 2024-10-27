@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_nav_dashboard_to_visitsFragment"
             app:destination="@id/visitsFragment" />
+        <action
+            android:id="@+id/action_nav_dashboard_to_detailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
 
     <fragment

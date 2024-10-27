@@ -10,23 +10,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gov.sindhpolice.beatbook.R;
 import com.gov.sindhpolice.beatbook.models.ListAll;
-import com.gov.sindhpolice.beatbook.ui.ListFragment;
+import com.gov.sindhpolice.beatbook.ui.dashboard.DashboardFragment;
 
 import java.util.ArrayList;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
+public class BookEntryAdapter extends RecyclerView.Adapter<BookEntryAdapter.ListViewHolder> {
 
-    private final ArrayList<ListAll> entryList;
-    private final ListFragment fragment; // Reference to the fragment
+    private ArrayList<ListAll> entryList;
+    private DashboardFragment fragment; // Reference to the fragment
 
-    public ListAdapter(ArrayList<ListAll> entryList, ListFragment fragment) {
+    public BookEntryAdapter(ArrayList<ListAll> entryList, DashboardFragment fragment) {
         this.entryList = entryList;
         this.fragment = fragment; // Initialize the fragment reference
     }
 
     @NonNull
     @Override
-    public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_list_item, parent, false);
         return new ListViewHolder(view);
     }
