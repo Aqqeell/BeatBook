@@ -7,10 +7,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
@@ -18,10 +20,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.gov.sindhpolice.beatbook.databinding.ActivityLoginBinding;
+import com.gov.sindhpolice.beatbook.models.GeneralModel;
 import com.gov.sindhpolice.beatbook.utils.SharedPrefManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String email, String password) {
-        String url = "http://192.168.200.201:8000/api/v1/login"; // API URL
+        String url = GeneralModel.API_URL + "login"; // API URL
 
         // Check network availability
         if (!isNetworkAvailable()) {
@@ -78,9 +83,11 @@ public class LoginActivity extends AppCompatActivity {
         try {
             requestBody.put("email", email);
             requestBody.put("password", password);
-            Log.d(TAG, "Request Body: " + requestBody.toString()); // Log the request body
+            Log.d(TAG, "Request Body: " + requestBody); // Log the request body
         } catch (JSONException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Error creating request body", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // Create a JSON Object Request with POST method
@@ -94,10 +101,10 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Handle the successful response
                     try {
-                        boolean loginSuccess = response.getBoolean("status");
+                        boolean status = response.getBoolean("status");
                         String message = response.getString("message");
 
-                        if (loginSuccess) {
+                        if (status) {
                             // Extract token from the response
                             JSONObject data = response.getJSONObject("data");
                             String token = data.getString("token");
@@ -111,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Login failed: " + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -124,37 +131,44 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Check if networkResponse is available
                     if (error.networkResponse != null) {
+                        String responseBody = new String(error.networkResponse.data);
                         Log.e(TAG, "Response code: " + error.networkResponse.statusCode);
-                        Log.e(TAG, "Response body: " + new String(error.networkResponse.data));
-                    }
+                        Log.e(TAG, "Response body: " + responseBody);
 
-                    String errorMessage;
-                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                        errorMessage = "Network timeout. Please check your connection.";
-                    } else if (error instanceof AuthFailureError) {
-                        errorMessage = "Authentication failure. Please check your login credentials.";
-                    } else if (error instanceof ServerError) {
-                        errorMessage = "Server error. Please try again later.";
-                    } else if (error instanceof NetworkError) {
-                        errorMessage = "Network error. Please check your internet connection.";
-                    } else if (error instanceof ParseError) {
-                        errorMessage = "Response parsing error. Please try again.";
+                        try {
+                            JSONObject jsonError = new JSONObject(responseBody);
+                            String errorMessage = jsonError.optString("message", "Unexpected error occurred.");
+                            Toast.makeText(LoginActivity.this, "Login error: " + errorMessage, Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(LoginActivity.this, "Error parsing error response", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        errorMessage = "Unexpected error occurred.";
+                        String errorMessage = getErrorMessage(error);
+                        Toast.makeText(LoginActivity.this, "Login error: " + errorMessage, Toast.LENGTH_LONG).show();
                     }
-
-                    Toast.makeText(LoginActivity.this, "Login error: " + errorMessage, Toast.LENGTH_LONG).show();
                 }
         );
-
-        // Set a retry policy in case of SocketTimeout & ConnectionTimeout Exceptions
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                30000, // 30 seconds timeout
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
 
+    private static @NonNull String getErrorMessage(VolleyError error) {
+        String errorMessage;
+        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+            errorMessage = "Network timeout. Please check your connection.";
+        } else if (error instanceof AuthFailureError) {
+            errorMessage = "Authentication failure. Please check your login credentials.";
+        } else if (error instanceof ServerError) {
+            errorMessage = "Server error. Please try again later.";
+        } else if (error instanceof NetworkError) {
+            errorMessage = "Network error. Please check your internet connection.";
+        } else if (error instanceof ParseError) {
+            errorMessage = "Response parsing error. Please try again.";
+        } else {
+            errorMessage = "Unexpected error occurred.";
+        }
+        return errorMessage;
+    }
 }

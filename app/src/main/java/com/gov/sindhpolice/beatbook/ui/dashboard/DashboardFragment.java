@@ -1,12 +1,12 @@
 package com.gov.sindhpolice.beatbook.ui.dashboard;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
@@ -28,6 +26,7 @@ import com.gov.sindhpolice.beatbook.LoginActivity;
 import com.gov.sindhpolice.beatbook.R;
 import com.gov.sindhpolice.beatbook.adapters.BookEntryAdapter;
 import com.gov.sindhpolice.beatbook.databinding.FragmentDashboardBinding;
+import com.gov.sindhpolice.beatbook.models.GeneralModel;
 import com.gov.sindhpolice.beatbook.models.ListAll;
 import com.gov.sindhpolice.beatbook.utils.SharedPrefManager;
 
@@ -42,7 +41,6 @@ import java.util.Map;
 public class DashboardFragment extends Fragment implements View.OnClickListener {
 
     private FragmentDashboardBinding binding;
-    private RecyclerView recyclerView;
     private BookEntryAdapter listAdapter;
     private ArrayList<ListAll> entryList;
     private ProgressBar progressBar;
@@ -71,7 +69,7 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         binding.btnVisitPlaces.setOnClickListener(this);
         binding.btnLogout.setOnClickListener(this);
 
-        recyclerView = binding.recyclerView;
+        RecyclerView recyclerView = binding.recyclerView;
         progressBar = binding.progressBar;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -127,49 +125,43 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
 
     private void fetchDashboardEntries() {
         progressBar.setVisibility(View.VISIBLE);
-        String url = "http://192.168.200.201:8000/api/v1/bookentries"; // Replace with your API URL
+        String url = GeneralModel.API_URL + "bookentries"; // Replace with your API URL
         String token = SharedPrefManager.getInstance(getActivity()).getToken();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        @SuppressLint("NotifyDataSetChanged") JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        progressBar.setVisibility(View.GONE);
-                        try {
-                            if (response.getBoolean("status")) {
-                                JSONArray dataArray = response.getJSONArray("data");
-                                entryList.clear(); // Clear the list before adding new entries
-                                for (int i = 0; i < dataArray.length(); i++) {
-                                    JSONObject entryJson = dataArray.getJSONObject(i);
-                                    ListAll entry = new ListAll(
-                                            entryJson.getInt("id"),
-                                            entryJson.getString("category"),
-                                            entryJson.getString("title"),
-                                            entryJson.getString("created_by"),
-                                            entryJson.getString("created_at")
-                                    );
-                                    entryList.add(entry);
-                                }
-                                listAdapter.notifyDataSetChanged();  // Notify the adapter of data changes after updating the list
-                            } else {
-                                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_SHORT).show();
+                response -> {
+                    progressBar.setVisibility(View.GONE);
+                    try {
+                        if (response.getBoolean("status")) {
+                            JSONArray dataArray = response.getJSONArray("data");
+                            entryList.clear(); // Clear the list before adding new entries
+                            for (int i = 0; i < dataArray.length(); i++) {
+                                JSONObject entryJson = dataArray.getJSONObject(i);
+                                ListAll entry = new ListAll(
+                                        entryJson.getInt("id"),
+                                        entryJson.getString("category"),
+                                        entryJson.getString("title"),
+                                        entryJson.getString("created_by"),
+                                        entryJson.getString("created_at")
+                                );
+                                entryList.add(entry);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), "Failed to parse data", Toast.LENGTH_SHORT).show();
+                            listAdapter.notifyDataSetChanged();  // Notify the adapter of data changes after updating the list
+                        } else {
+                            Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_SHORT).show();
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Failed to parse data", Toast.LENGTH_SHORT).show();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressBar.setVisibility(View.GONE);
-                        Log.e("DashboardFragment", "Error: " + error.getMessage());
-                        Toast.makeText(getActivity(), "Failed to fetch data", Toast.LENGTH_SHORT).show();
-                    }
+                error -> {
+                    progressBar.setVisibility(View.GONE);
+                    Log.e("DashboardFragment", "Error: " + error.getMessage());
+                    Toast.makeText(getActivity(), "Failed to fetch data", Toast.LENGTH_SHORT).show();
                 }
         ) {
             @Override

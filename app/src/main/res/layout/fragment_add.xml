@@ -6,11 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<ScrollView xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    tools:ignore="MissingPrefix">
+    android:layout_height="match_parent">
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -19,21 +17,37 @@
     android:padding="16dp"
     tools:context=".ui.AddFragment">
 
-    <Spinner
-        android:id="@+id/spinnerCategories"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:hint="Select Category"
-        tools:ignore="HardcodedText" />
+        android:hint="Select Category">
 
-    <Spinner
-        android:id="@+id/spinnerSubCategories"
+        <AutoCompleteTextView
+            android:id="@+id/dd_Categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:background="@null" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:hint="Select Sub-Category"
-        tools:ignore="HardcodedText" />
+        android:hint="Select Sub-Category">
+
+        <AutoCompleteTextView
+            android:id="@+id/dd_subCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:background="@null" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -102,6 +116,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center"
         android:gravity="center_horizontal|center_vertical"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:weightSum="2.4">
 
@@ -118,7 +133,7 @@
                 android:id="@+id/etLat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal"
+                android:enabled="false"
                 android:required="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -135,7 +150,7 @@
                 android:id="@+id/etLong"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal"
+                android:enabled="false"
                 android:required="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -153,31 +168,68 @@
     </LinearLayout>
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Selected Image"
-        android:scaleType="centerCrop"
-        android:visibility="gone"
-        android:src="@drawable/ic_placeholder_image" />
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="No image selected"-->
+<!--            android:layout_weight="1.67"-->
+<!--            android:paddingEnd="5dp"-->
+<!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"-->
+<!--            tools:ignore="RtlSymmetry">-->
 
-    <ImageView
-        android:id="@+id/imgCaptured"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="10dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_placeholder_image"
-        android:visibility="gone"/> <!-- Initially hidden -->
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/tv_image"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:maxLines="2"-->
+<!--                android:enabled="false"-->
+<!--                android:required="true"/>-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCaptureImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Capture Image"
-        android:layout_marginBottom="10dp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_weight="1.67"/>
+
+        <!-- Capture image button -->
+        <ImageButton
+            android:id="@+id/btnCaptureImage"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_gravity="center_vertical|center_horizontal|center"
+            android:src="@drawable/ic_camera"
+            android:background="@color/appBackground"
+            android:layout_weight="0.33"/>
+
+
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:contentDescription="Selected Image"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:visibility="gone"-->
+<!--        android:src="@drawable/ic_placeholder_image" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/imgCaptured"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:src="@drawable/ic_placeholder_image"-->
+<!--        android:visibility="gone"/> &lt;!&ndash; Initially hidden &ndash;&gt;-->
+
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btnCaptureImage"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Capture Image"-->
+<!--        android:layout_marginBottom="10dp"/>-->
 
 
     <com.google.android.material.button.MaterialButton
@@ -186,6 +238,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Add Entry"
+        android:textAllCaps="false"
+        android:textSize="16sp"
         android:layout_marginTop="20dp"/>
 
 </LinearLayout>

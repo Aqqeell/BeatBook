@@ -5,18 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView; // Import TextView for displaying details
-import android.widget.ProgressBar; // Import ProgressBar for loading state
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.gov.sindhpolice.beatbook.R;
+import com.gov.sindhpolice.beatbook.models.GeneralModel;
 import com.gov.sindhpolice.beatbook.utils.SharedPrefManager;
 
 import org.json.JSONException;
@@ -65,46 +63,40 @@ public class DetailFragment extends Fragment {
 
     private void fetchEntryDetails(int entryId) {
 //        progressBar.setVisibility(View.VISIBLE);
-        String url = "http://192.168.200.201:8000/api/v1/bookentries/" + entryId; // Replace with your API URL
+        String url = GeneralModel.API_URL + "bookentries/" + entryId; // Replace with your API URL
         String token = SharedPrefManager.getInstance(getActivity()).getToken();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
+                response -> {
 //                        progressBar.setVisibility(View.GONE);
-                        try {
-                            if (response.getBoolean("status")) {
-                                JSONObject entryJson = response.getJSONObject("data");
-                                // Assuming the response has a "data" object with the same fields as ListAll
-                                tvTitle.setText(entryJson.getString("title"));
-                                tvCategory.setText(entryJson.getString("category"));
-                                tvLat.setText(entryJson.getString("lat"));
-                                tvLong.setText(entryJson.getString("long"));
-                                tvAddress.setText(entryJson.getString("address"));
-                                tvContact.setText(entryJson.getString("contact_no"));
-                                tvCreatedBy.setText(entryJson.getString("created_by"));
-                                tvCreatedAt.setText(entryJson.getString("created_at"));
-                                tvUpdatedAt.setText(entryJson.getString("updated_at"));
-                                tvDesc.setText(entryJson.getString("description"));
-                            } else {
-                                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), "Failed to parse entry details", Toast.LENGTH_SHORT).show();
+                    try {
+                        if (response.getBoolean("status")) {
+                            JSONObject entryJson = response.getJSONObject("data");
+                            // Assuming the response has a "data" object with the same fields as ListAll
+                            tvTitle.setText(entryJson.getString("title"));
+                            tvCategory.setText(entryJson.getString("category"));
+                            tvLat.setText(entryJson.getString("lat"));
+                            tvLong.setText(entryJson.getString("long"));
+                            tvAddress.setText(entryJson.getString("address"));
+                            tvContact.setText(entryJson.getString("contact_no"));
+                            tvCreatedBy.setText(entryJson.getString("created_by"));
+                            tvCreatedAt.setText(entryJson.getString("created_at"));
+                            tvUpdatedAt.setText(entryJson.getString("updated_at"));
+                            tvDesc.setText(entryJson.getString("description"));
+                        } else {
+                            Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_SHORT).show();
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Failed to parse entry details", Toast.LENGTH_SHORT).show();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                error -> {
 //                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "Failed to fetch entry details", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(requireActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
         ) {
             @Override
@@ -116,6 +108,6 @@ public class DetailFragment extends Fragment {
         };
 
         // Add the request to the RequestQueue
-        Volley.newRequestQueue(getActivity()).add(jsonObjectRequest);
+        Volley.newRequestQueue(requireActivity()).add(jsonObjectRequest);
     }
 }

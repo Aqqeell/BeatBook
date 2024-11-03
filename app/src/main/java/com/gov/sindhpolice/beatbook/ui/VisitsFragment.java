@@ -1,5 +1,6 @@
 package com.gov.sindhpolice.beatbook.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,11 +20,10 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gov.sindhpolice.beatbook.R;
+import com.gov.sindhpolice.beatbook.models.GeneralModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,10 +37,8 @@ public class VisitsFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView imageView;
-    private Uri imageUri;
     private Bitmap bitmap;
     private EditText etBookId, etLat, etLong, etRemarks;
-    private Button btnSubmit, btnSelectImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,8 +49,8 @@ public class VisitsFragment extends Fragment {
         etLong = view.findViewById(R.id.etLong);
         etRemarks = view.findViewById(R.id.etRemarks);
         imageView = view.findViewById(R.id.imageView);
-        btnSubmit = view.findViewById(R.id.btnSubmit);
-        btnSelectImage = view.findViewById(R.id.btnSelectImage);
+        Button btnSubmit = view.findViewById(R.id.btnSubmit);
+        Button btnSelectImage = view.findViewById(R.id.btnSelectImage);
 
         btnSelectImage.setOnClickListener(v -> openImageChooser());
         btnSubmit.setOnClickListener(v -> submitVisitData());
@@ -70,20 +68,23 @@ public class VisitsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                imageView.setImageBitmap(bitmap); // Display selected image
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (requestCode == PICK_IMAGE_REQUEST) {
+            requireActivity();
+            if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+                    imageView.setImageBitmap(bitmap); // Display selected image
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     // Method to submit visit data
     private void submitVisitData() {
-        String url = "http://192.168.200.201:8000/api/v1/visits";
+        String url = GeneralModel.API_URL + "visits";
         String token = "your_authorization_token";  // Replace with your token
         String bookId = etBookId.getText().toString().trim();
         String latitude = etLat.getText().toString().trim();
@@ -136,7 +137,7 @@ public class VisitsFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         requestQueue.add(stringRequest);
     }
 }
