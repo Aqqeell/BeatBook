@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,7 +42,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
     private FragmentDashboardBinding binding;
     private BookEntryAdapter listAdapter;
     private ArrayList<ListAll> entryList;
-    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,16 +49,16 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         entryList = new ArrayList<>();
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
         initComps();
         fetchDashboardEntries(); // Fetch entries when the fragment is created
-        return root;
+        return binding.getRoot();
     }
 
     private void initComps() {
+        // Setting up button listeners
         binding.btnCounter1.setOnClickListener(this);
         binding.btnCounter2.setOnClickListener(this);
         binding.btnCounter3.setOnClickListener(this);
@@ -69,13 +67,11 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         binding.btnVisitPlaces.setOnClickListener(this);
         binding.btnLogout.setOnClickListener(this);
 
-        RecyclerView recyclerView = binding.recyclerView;
-        progressBar = binding.progressBar;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        // Initialize the adapter and set it to the RecyclerView
-        listAdapter = new BookEntryAdapter(entryList, this); // Update this line
-        recyclerView.setAdapter(listAdapter);
+        // Setting up RecyclerView and ProgressBar
+        entryList = new ArrayList<>();
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        listAdapter = new BookEntryAdapter(entryList, this);
+        binding.recyclerView.setAdapter(listAdapter);
     }
 
     @Override
@@ -86,45 +82,50 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
+        Bundle bundle = new Bundle();
         try {
-            Bundle bundle = new Bundle();
             if (view instanceof CardView) {
-                CardView button = (CardView) view;
-                bundle.putInt("type", button.getId());
-                if (button == binding.btnListAll) {
-                    String title = getResources().getString(R.string.cv_listAll);
-                    bundle.putString("title", title);
-                    bundle.putString("type_id", "4");
-                    Navigation.findNavController(view).navigate(R.id.action_nav_dashboard_to_listAllFragment, bundle);
-                } else if (button == binding.btnVisitPlaces) {
-                    String title = getResources().getString(R.string.cv_visitPlaces);
-                    bundle.putString("title", title);
-                    bundle.putString("type_id", "5");
-                    Navigation.findNavController(view).navigate(R.id.action_nav_dashboard_to_visitsFragment, bundle);
-                } else if (button == binding.btnLogout) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Logout")
-                            .setMessage("Are you sure you want to logout?")
-                            .setPositiveButton("Yes", (dialog, which) -> startActivity(new Intent(requireActivity(), LoginActivity.class)))
-                            .setNegativeButton("No", null)
-                            .show();
-                }
+                handleCardClick((CardView) view, bundle);
             } else if (view instanceof MaterialButton) {
-                MaterialButton button1 = (MaterialButton) view;
-                bundle.putInt("type", button1.getId());
-                if (button1 == binding.addNew) {
-                    String title = getResources().getString(R.string.btn_addNew);
-                    bundle.putString("title", title);
-                    bundle.putString("type_id", "7");
-                    Navigation.findNavController(view).navigate(R.id.action_nav_dashboard_to_addFragment, bundle);
-                }
+                handleButtonClick((MaterialButton) view, bundle);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Log.e("DashboardFragment", "Error in onClick: " + e.getMessage());
+        }
+    }
+
+    private void handleCardClick(CardView card, Bundle bundle) {
+        if (card == binding.btnListAll) {
+            String title = getResources().getString(R.string.cv_listAll);
+            bundle.putString("title", title);
+            bundle.putString("type_id", "4");
+            Navigation.findNavController(card).navigate(R.id.action_nav_dashboard_to_listAllFragment, bundle);
+        } else if (card == binding.btnVisitPlaces) {
+            String title = getResources().getString(R.string.cv_visitPlaces);
+            bundle.putString("title", title);
+            bundle.putString("type_id", "5");
+            Navigation.findNavController(card).navigate(R.id.action_nav_dashboard_to_visitsFragment, bundle);
+        } else if (card == binding.btnLogout) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", (dialog, which) -> startActivity(new Intent(requireActivity(), LoginActivity.class)))
+                    .setNegativeButton("No", null)
+                    .show();
+        }
+    }
+
+    private void handleButtonClick(MaterialButton button, Bundle bundle) {
+        if (button == binding.addNew) {
+            String title = getResources().getString(R.string.btn_addNew);
+            bundle.putString("title", title);
+            bundle.putString("type_id", "7");
+            Navigation.findNavController(button).navigate(R.id.action_nav_dashboard_to_addFragment, bundle);
         }
     }
 
     private void fetchDashboardEntries() {
-        progressBar.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.VISIBLE);
         String url = GeneralModel.API_URL + "bookentries"; // Replace with your API URL
         String token = SharedPrefManager.getInstance(getActivity()).getToken();
 
@@ -133,11 +134,11 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
                 url,
                 null,
                 response -> {
-                    progressBar.setVisibility(View.GONE);
+                    binding.progressBar.setVisibility(View.GONE);
                     try {
                         if (response.getBoolean("status")) {
                             JSONArray dataArray = response.getJSONArray("data");
-                            entryList.clear(); // Clear the list before adding new entries
+                            entryList.clear();
                             for (int i = 0; i < dataArray.length(); i++) {
                                 JSONObject entryJson = dataArray.getJSONObject(i);
                                 ListAll entry = new ListAll(
@@ -149,17 +150,17 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
                                 );
                                 entryList.add(entry);
                             }
-                            listAdapter.notifyDataSetChanged();  // Notify the adapter of data changes after updating the list
+                            listAdapter.notifyDataSetChanged();
                         } else {
                             Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e("DashboardFragment", "JSON Parsing error: " + e.getMessage());
                         Toast.makeText(getActivity(), "Failed to parse data", Toast.LENGTH_SHORT).show();
                     }
                 },
                 error -> {
-                    progressBar.setVisibility(View.GONE);
+                    binding.progressBar.setVisibility(View.GONE);
                     Log.e("DashboardFragment", "Error: " + error.getMessage());
                     Toast.makeText(getActivity(), "Failed to fetch data", Toast.LENGTH_SHORT).show();
                 }
@@ -167,23 +168,18 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + token); // Add the token to the headers
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
 
-        // Add the request to the RequestQueue
         Volley.newRequestQueue(requireActivity()).add(jsonObjectRequest);
     }
 
     public void onEntryClick(int entryId) {
-        // Navigate to DetailFragment using Navigation component
         Bundle bundle = new Bundle();
-        bundle.putInt("entryId", entryId); // Pass the selected entry ID
-
-        // Show a toast for demonstration (you can remove this later)
+        bundle.putInt("entryId", entryId);
         Toast.makeText(getActivity(), "Clicked entry ID: " + entryId, Toast.LENGTH_SHORT).show();
-
         Navigation.findNavController(requireView()).navigate(R.id.action_nav_dashboard_to_detailFragment, bundle);
     }
 }

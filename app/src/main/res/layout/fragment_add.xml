@@ -28,8 +28,9 @@
             android:id="@+id/dd_Categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:background="@null" />
+            android:background="@null"
+            android:textSize="14sp"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,8 +45,9 @@
             android:id="@+id/dd_subCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:background="@null" />
+            android:textSize="14sp"
+            android:background="@null"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:textSize="14sp"
             android:required="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,6 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:textSize="14sp"
             android:required="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,6 +96,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:maxLength="11"
+            android:textSize="14sp"
             android:digits="0123456789"
             android:required="true"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -108,6 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
+            android:textSize="14sp"
             android:lines="3"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -133,7 +139,7 @@
                 android:id="@+id/etLat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="false"
+                android:textSize="14sp"
                 android:required="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,7 +156,7 @@
                 android:id="@+id/etLong"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="false"
+                android:textSize="14sp"
                 android:required="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -159,11 +165,12 @@
             android:id="@+id/btnFetchLocation"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:layout_gravity="center_vertical|center_horizontal|center"
-            android:src="@drawable/ic_pin"
+            android:layout_marginTop="4dp"
+            android:layout_weight="0.4"
             android:background="@color/appBackground"
-            android:layout_weight="0.4"/>
+            android:src="@drawable/ic_pin"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
 
@@ -198,11 +205,12 @@
             android:id="@+id/btnCaptureImage"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:layout_gravity="center_vertical|center_horizontal|center"
-            android:src="@drawable/ic_camera"
+            android:layout_marginTop="4dp"
+            android:layout_weight="0.33"
             android:background="@color/appBackground"
-            android:layout_weight="0.33"/>
+            android:src="@drawable/ic_camera"
+            tools:ignore="ContentDescription" />
 
 
 <!--    <ImageView-->
